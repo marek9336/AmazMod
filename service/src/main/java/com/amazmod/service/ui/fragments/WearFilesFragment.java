@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazmod.service.Constants;
 import com.amazmod.service.R;
 import com.amazmod.service.adapters.AppInfoAdapter;
 import com.amazmod.service.helper.RecyclerTouchListener;
@@ -32,6 +33,7 @@ import com.amazmod.service.support.AppInfo;
 import com.amazmod.service.ui.FileViewerWebViewActivity;
 import com.amazmod.service.util.DeviceUtil;
 import com.amazmod.service.util.ExecCommand;
+import com.amazmod.service.util.SystemProperties;
 
 import org.tinylog.Logger;
 
@@ -515,13 +517,17 @@ public class WearFilesFragment extends Fragment {
                             sleep(1000);
                             new ExecCommand("adb install -r " + file.getAbsolutePath());
                         } else {
-                            final PowerManager.WakeLock myWakeLock = DeviceUtil.installApkAdb(mContext, file, false);
-                            new Handler().postDelayed(new Runnable() { //Release wakelock after 10s when installing from File Manager
-                                public void run() {
-                                    if (myWakeLock != null && myWakeLock.isHeld())
-                                        myWakeLock.release();
-                                }
-                            }, 10000 /* 10s */);
+                            if (SystemProperties.isNexo()) {
+                                DeviceUtil.installApk(mContext, file.getAbsolutePath(), Constants.INSTALL);
+                            } else {
+                                final PowerManager.WakeLock myWakeLock = DeviceUtil.installApkAdb(mContext, file, false);
+                                new Handler().postDelayed(new Runnable() { //Release wakelock after 10s when installing from File Manager
+                                    public void run() {
+                                        if (myWakeLock != null && myWakeLock.isHeld())
+                                            myWakeLock.release();
+                                    }
+                                }, 10000 /* 10s */);
+                            }
                         }
                     }
                 })

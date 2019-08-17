@@ -18,7 +18,8 @@ if [[ ! "$BUSYBOXOK" == "BusyBox" ]]; then
     echo "#### busybox not found!"
 fi
 echo "#START#">&2
-echo "#### killing adb server $(adb kill-server)"
+echo "#### killing adb server $(adb kill-server)"exit
+
 if [[ "$1" != "" ]]; then
    echo "#### executing command: $1"
    $1 2>&1

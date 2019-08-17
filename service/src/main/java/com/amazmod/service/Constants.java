@@ -51,6 +51,7 @@ public class Constants {
     public static final String PREF_DEFAULT_LOCALE = "pref_default_locale";
 
     public static final String CUSTOM_WATCHFACE_DATA = "CustomWatchfaceData";
+    public static final String CUSTOM_CALENDAR_DATA = "CustomCalendarData";
 
     public static final int PREF_DEFAULT_NOTIFICATION_SCREEN_TIMEOUT = 10 * 1000;
     public static final int PREF_DEFAULT_NOTIFICATION_VIBRATION = 350;
@@ -94,6 +95,7 @@ public class Constants {
     public static final String[] BUILD_PACE_MODELS = {"A1602", "A1612"};
     public static final String[] BUILD_STRATOS_MODELS = {"A1609", "A1619"};
     public static final String[] BUILD_VERGE_MODELS = {"A1801", "A1811"};
+    public static final String[] BUILD_NEXO_MODELS = {"AC1807", "AC1817"};
 
     public static final String WIDGET_ORDER_IN = "springboard_widget_order_in";
     public static final String WIDGET_ORDER_OUT = "springboard_widget_order_out";

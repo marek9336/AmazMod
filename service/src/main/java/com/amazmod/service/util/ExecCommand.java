@@ -62,7 +62,9 @@ public class ExecCommand {
             return;
         }
         final String adbScript = DeviceUtil.copyScriptFile(AmazModService.getContext(), "adb_script.sh").getAbsolutePath();
-        final String adbCommand = String.format("log -pw -t'AmazMod ExecCommand' $(busybox nohup sh %s '%s' 2>&1 &)", adbScript, command);
+        String adbCommand = String.format("log -pw -t'AmazMod ExecCommand' $(busybox nohup sh %s '%s' 2>&1 &)", adbScript, command);
+        if (SystemProperties.isNexo())
+            adbCommand = adbCommand.replace("busybox", "toybox");
         Logger.trace("execADB adbCommand: " + adbCommand);
 
         try {

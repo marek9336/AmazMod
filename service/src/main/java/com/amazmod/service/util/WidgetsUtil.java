@@ -64,6 +64,11 @@ public class WidgetsUtil {
         //Out contains them all, but no ordering.
         String widget_order_out = DeviceUtil.systemGetString(context, Constants.WIDGET_ORDER_OUT);
 
+        if (widget_order_in == null || widget_order_out == null) {
+            Logger.warn("WidgetsUtil loadSettings cannot read settings, returning…");
+            return;
+        }
+
         Logger.debug("WidgetsUtil loadSettings widget_order_in  : " + widget_order_in.substring(0, Math.min(widget_order_in.length(), 352)));
         Logger.debug("WidgetsUtil loadSettings widget_order_out : " + widget_order_out.substring(0, Math.min(widget_order_out.length(), 352)));
         Logger.debug("WidgetsUtil loadSettings savedOrder : " + savedOrder.substring(0, Math.min(savedOrder.length(), 352)));

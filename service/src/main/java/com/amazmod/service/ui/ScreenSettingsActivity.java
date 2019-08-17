@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,6 +84,9 @@ public class ScreenSettingsActivity extends Activity {
         if (SystemProperties.isVerge()) {
             defaultDensity = "240";
             labels[0] = "(240)";
+        } if (SystemProperties.isNexo()) {
+            defaultDensity = "320";
+            labels[0] = "(320)";
         } else
             defaultDensity = "238";
 
@@ -151,9 +156,12 @@ public class ScreenSettingsActivity extends Activity {
                 TextView mTextView = (TextView) mView;
                 mTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16.0f);
                 mTextView.setText(String.format("%s %s", items[position], labels[mode* 4 + position]));
-                if (mode == 0 && position == 3) {
+
+                if (SystemProperties.isNexo())
+                    mTextView.setTextColor(getResources().getColor(android.R.color.black));
+
+                if (mode == 0 && position == 3)
                     mTextView.setTextColor(getResources().getColor(android.R.color.darker_gray));
-                }
                 return mView;
             }
         };
@@ -329,21 +337,24 @@ public class ScreenSettingsActivity extends Activity {
 
     private void getCurrentDensity() {
 
-        final ExecCommand execCommand = new ExecCommand("wm density");
+        /*
+        final ExecCommand execCommand = new ExecCommand(new String[] {"sh", "-c", "wm density"});
         final String result = execCommand.getOutput();
 
         Logger.debug("ScreenSettingsActivity getCurrentDensity result: {} | error: {}", result, execCommand.getError());
+        */
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        final String result = String.valueOf(metrics.density * 160f);
+        Logger.debug("ScreenSettingsActivity getCurrentDensity result: {}", result);
 
-        if (result != null) {
-            if (result.contains(defaultDensity) && !result.toLowerCase().contains("override"))
-                initialDensity = 0;
-            else if (result.contains("258") && result.toLowerCase().contains("override"))
-                initialDensity = 1;
-            else if (result.contains("148") && result.toLowerCase().contains("override"))
-                initialDensity = 2;
-            else
-                initialDensity = 3;
-        } else
+        if (result.contains(defaultDensity))
+            initialDensity = 0;
+        else if (result.contains("258"))
+            initialDensity = 1;
+        else if (result.contains("148"))
+            initialDensity = 2;
+        else
             initialDensity = 3;
 
         densities[initialDensity] = densities[initialDensity] + " *";
@@ -353,12 +364,25 @@ public class ScreenSettingsActivity extends Activity {
 
     private void saveDensity() {
 
-        runCommand(KILL_LAUNCHER + ";" + DENSITY_COMMANDS[densityChosen]);
-        SystemClock.sleep(1000);
+        if (SystemProperties.isNexo()) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            Logger.debug("ScreenSettingsActivity saveDensity metricsI: {}", metrics.toString());
 
-        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.huami.watch.launcher");
-        if (launchIntent != null) {
-            startActivity(launchIntent);
+            new ExecCommand(new String[]{DENSITY_COMMANDS[densityChosen]}, null, null);
+
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            Logger.debug("ScreenSettingsActivity saveDensity metricsF: {}", metrics.toString());
+            //getResources().getDisplayMetrics().setTo(metrics);
+
+        } else {
+            runCommand(KILL_LAUNCHER + ";" + DENSITY_COMMANDS[densityChosen]);
+            SystemClock.sleep(1000);
+
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.huami.watch.launcher");
+            if (launchIntent != null) {
+                startActivity(launchIntent);
+            }
         }
 
     }

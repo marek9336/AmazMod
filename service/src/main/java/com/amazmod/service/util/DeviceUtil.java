@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.amazmod.service.Constants;
 import com.amazmod.service.MainService;
 import com.amazmod.service.receiver.PackageReceiver;
+import com.amazmod.service.springboard.WidgetSettings;
 import com.amazmod.service.ui.ConfirmationWearActivity;
 
 import org.tinylog.Logger;
@@ -213,7 +214,9 @@ public class DeviceUtil {
     public static void installApk(Context context, String apkPath, String mode) {
 
         Logger.debug("installApk apkPath: " + apkPath + " | mode: " + mode);
-        enableApkInstall();
+
+        if (!SystemProperties.isNexo())
+            enableApkInstall();
 
         Intent intent = new Intent(context, ConfirmationWearActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
@@ -451,33 +454,55 @@ public class DeviceUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.System.canWrite(context)) {
                 showToast(context, "Write Settings Permission Required!");
+                Logger.warn("no write settings permission!");
+                return;
+            } else {
+                Settings.System.putString(context.getContentResolver(), name, value);
+                Logger.trace("systemPutAdb SystemSettings");
                 return;
             }
         }
+        Logger.trace("systemPutAdb adb");
         new ExecCommand(ExecCommand.ADB, String.format("adb shell settings put system %s %s", name, value));
     }
 
     public static void systemPutString(Context context, String name, String value) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.System.canWrite(context)) {
-                showToast(context, "Write Settings Permission Required!");
-                return;
+        Logger.trace("systemPutString");
+        if (Constants.CUSTOM_WATCHFACE_DATA.equals(name)) {
+            Logger.trace("systemPutString widgetSettings");
+            WidgetSettings widgetSettings = new WidgetSettings(Constants.TAG, context);
+            widgetSettings.set(name, value);
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.System.canWrite(context)) {
+                    showToast(context, "Write Settings Permission Required!");
+                    Logger.warn("no write settings permission!");
+                    return;
+                }
             }
+            Logger.trace("systemPutString SystemSettings");
+            Settings.System.putString(context.getContentResolver(), name, value);
         }
-        Settings.System.putString(context.getContentResolver(), name, value);
     }
 
     public static String systemGetString(Context context, String name) {
-        return Settings.System.getString(context.getContentResolver(), name);
+        if (Constants.CUSTOM_WATCHFACE_DATA.equals(name)) {
+            Logger.trace("systemGetString widgetSettings");
+            WidgetSettings widgetSettings = new WidgetSettings(Constants.TAG, context);
+            return widgetSettings.get(name);
+        } else
+            return Settings.System.getString(context.getContentResolver(), name);
     }
 
     public static void systemPutInt(Context context, String name, int value) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.System.canWrite(context)) {
                 showToast(context, "Write Settings Permission Required!");
+                Logger.warn("no write settings permission!");
                 return;
             }
         }
+        Logger.trace("systemPutInt");
         Settings.System.putInt(context.getContentResolver(), name, value);
     }
 
@@ -493,9 +518,11 @@ public class DeviceUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.System.canWrite(context)) {
                 showToast(context, "Write Settings Permission Required!");
+                Logger.warn("no write settings permission!");
                 return;
             }
         }
+        Logger.trace("systemPutFloat");
         Settings.System.putFloat(context.getContentResolver(), name, value);
     }
 

@@ -1,16 +1,21 @@
 package com.amazmod.service.springboard;
 
+import android.accessibilityservice.AccessibilityService;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.wearable.view.BoxInsetLayout;
 import android.support.wearable.view.DotsPageIndicator;
 import android.support.wearable.view.SwipeDismissFrameLayout;
 import android.view.MotionEvent;
 
+import com.amazmod.service.AmazModAccessibilityService;
 import com.amazmod.service.R;
 import com.amazmod.service.adapters.GridViewPagerAdapter;
 import com.amazmod.service.support.ActivityFinishRunnable;
@@ -21,6 +26,7 @@ import com.amazmod.service.ui.fragments.WearFlashlightFragment;
 import com.amazmod.service.ui.fragments.WearInfoFragment;
 import com.amazmod.service.ui.fragments.WearMenuFragment;
 import com.amazmod.service.ui.fragments.WearNotificationsFragment;
+import com.amazmod.service.util.SystemProperties;
 
 import org.tinylog.Logger;
 
@@ -45,11 +51,18 @@ public class LauncherWearGridActivity extends Activity {
     public static final char NOTIFICATIONS_FROM_WATCHFACE = 'W';
     public static final char FILES = 'B';
 
+    private static final int CODE_WRITE_SETTINGS_PERMISSION = 1;
+    private static final int CODE_OVERLAY_PERMISSION = 2;
+
     private static char mode;
     private Handler handler;
     private ActivityFinishRunnable activityFinishRunnable;
 
     private HorizontalGridViewPager mGridViewPager;
+
+    private AccessibilityService accessibilityService = new AmazModAccessibilityService();
+
+    private boolean isWriteSettingsPermitted = false, isOverlayPermitted = false;
 
     @Override
     public void startActivity(Intent intent) {
@@ -79,6 +92,11 @@ public class LauncherWearGridActivity extends Activity {
         setContentView(R.layout.activity_launcher_wear);
 
         ButterKnife.bind(this);
+
+        checkPermissions();
+
+        if (!isWriteSettingsPermitted || !isOverlayPermitted)
+            finish();
 
         gridSwipeLayout.addCallback(new SwipeDismissFrameLayout.Callback() {
             @Override
@@ -127,6 +145,24 @@ public class LauncherWearGridActivity extends Activity {
         if (NOTIFICATIONS_FROM_WATCHFACE == mode)
             startTimerFinish();
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (requestCode == CODE_WRITE_SETTINGS_PERMISSION && Settings.System.canWrite(this)){
+                Logger.trace("CODE_WRITE_SETTINGS_PERMISSION success");
+                isWriteSettingsPermitted = true;
+            } else
+                isWriteSettingsPermitted = false;
+
+            if (requestCode == CODE_OVERLAY_PERMISSION && Settings.canDrawOverlays(this)){
+                Logger.trace("CODE_OVERLAY_PERMISSION success");
+                isOverlayPermitted = true;
+            } else
+                isOverlayPermitted = false;
+        }
     }
 
     private void setGrid(char mode){
@@ -181,19 +217,20 @@ public class LauncherWearGridActivity extends Activity {
     }
 
     public void startTimerFinish() {
-        Logger.debug("LauncherWearGridActivity startTimerFinish");
+        Logger.trace("LauncherWearGridActivity startTimerFinish");
         if (activityFinishRunnable != null)
             handler.removeCallbacks(activityFinishRunnable);
         handler.postDelayed(activityFinishRunnable, 12000);
     }
 
     public void stopTimerFinish() {
-        Logger.debug("LauncherWearGridActivity stopTimerFinish");
+        Logger.trace("LauncherWearGridActivity stopTimerFinish");
         if (activityFinishRunnable != null)
             handler.removeCallbacks(activityFinishRunnable);
     }
 
     private void clearBackStack() {
+        Logger.trace("LauncherWearGridActivity clearBackStack");
         FragmentManager manager = this.getFragmentManager();
         if (manager.getBackStackEntryCount() > 0) {
             Logger.warn("LauncherWearGridActivity ***** clearBackStack getBackStackEntryCount: " + manager.getBackStackEntryCount());
@@ -205,6 +242,39 @@ public class LauncherWearGridActivity extends Activity {
 
     public void setSwipeable(boolean status){
         gridSwipeLayout.setSwipeable(status);
+    }
+
+    public void checkPermissions() {
+        Logger.trace("LauncherWearGridActivity checkPermissions");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent;
+            if (!Settings.System.canWrite(this)) {
+                intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                this.startActivityForResult(intent, CODE_WRITE_SETTINGS_PERMISSION);
+                sendBackKeyEvent();
+            } else
+                isWriteSettingsPermitted = true;
+
+            if (!Settings.canDrawOverlays(this)) {
+                intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, CODE_OVERLAY_PERMISSION);
+                sendBackKeyEvent();
+            } else
+                isOverlayPermitted = true;
+        } else {
+            isOverlayPermitted = true;
+            isWriteSettingsPermitted = true;
+        }
+    }
+
+    private void sendBackKeyEvent() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                accessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+            }
+        }, 10000 /* 10s */);
     }
 
 }

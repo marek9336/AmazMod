@@ -1,8 +1,8 @@
 package com.amazmod.service;
 
+import android.accessibilityservice.AccessibilityService;
 import android.annotation.SuppressLint;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -10,13 +10,14 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
 import com.amazmod.service.springboard.LauncherWearGridActivity;
-import com.amazmod.service.util.DeviceUtil;
+import com.amazmod.service.util.ExecCommand;
 import com.amazmod.service.util.SystemProperties;
 
 import org.tinylog.Logger;
@@ -27,6 +28,8 @@ public class OverlayLauncher extends Service implements OnTouchListener {
     private WindowManager wm;
     private WindowManager.LayoutParams params, paramsRight, paramsLeft;
     private Context context;
+
+    private AccessibilityService accessibilityService = new AmazModAccessibilityService();
 
     private static char position;
     private static int originX, originY, moveX, moveY;
@@ -126,8 +129,11 @@ public class OverlayLauncher extends Service implements OnTouchListener {
                     setParamsRight();
                     wm.updateViewLayout(overlayLauncher, params);
                 } else {
-                    if (isWatchface())
+                    if (isWatchface()) {
                         startIntent();
+                    } else {
+                        accessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+                    }
                 }
                 originX = originY = moveX = moveY = 0;
                 break;
@@ -158,8 +164,12 @@ public class OverlayLauncher extends Service implements OnTouchListener {
             params.width = 170;
             vibration = 30;
             overlayColor = OVERLAY_COLOR_AMOLED;
-        }
-        else {
+        } else if (SystemProperties.isNexo()) {
+            params.height = 30;
+            params.width = 207;
+            vibration = 10;
+            overlayColor = OVERLAY_COLOR_AMOLED;
+        } else {
             params.height = 15;
             params.width = 150;
             vibration = 10;
@@ -183,6 +193,8 @@ public class OverlayLauncher extends Service implements OnTouchListener {
     private void setParamsLeft() {
         if (SystemProperties.isVerge())
             params.x = 190;
+        else if (SystemProperties.isNexo())
+            params.x = 247;
         else
             params.x = 170;
         position = POSITION_LEFT;
@@ -190,7 +202,12 @@ public class OverlayLauncher extends Service implements OnTouchListener {
     }
 
     public static boolean isWatchface() {
-        final boolean isWhatFace = SystemProperties.getBoolean("prop.launcher.at_watchface", false);
+        boolean isWhatFace;
+        if (SystemProperties.isNexo())
+            isWhatFace = SystemProperties.getBoolean("huami.launcher.at_watchface", false);
+        else
+            isWhatFace = SystemProperties.getBoolean("prop.launcher.at_watchface", false);
+
         Logger.debug("OverlayLauncher isWatchFace: {}", isWhatFace);
         return isWhatFace;
     }

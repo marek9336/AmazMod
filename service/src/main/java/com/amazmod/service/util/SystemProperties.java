@@ -22,6 +22,7 @@ import android.os.SystemClock;
 import android.provider.Settings;
 
 import com.amazmod.service.Constants;
+import com.amazmod.service.MainService;
 
 import org.tinylog.Logger;
 
@@ -234,24 +235,47 @@ public class SystemProperties {
     }
 
     public static boolean isPace(){
-        String model = getSystemProperty("ro.build.huami.model");
+        String model = MainService.deviceModel;
+        if (model == null || model.isEmpty()) {
+            model = getSystemProperty("ro.build.huami.model");
+            MainService.deviceModel = model;
+        }
         boolean isPace = Arrays.asList(Constants.BUILD_PACE_MODELS).contains(model);
         Logger.debug("isStratos: checking if model " + model + " is an Amazfit Stratos: " + isPace);
         return isPace;
     }
 
     public static boolean isStratos(){
-        String model = getSystemProperty("ro.build.huami.model");
+        String model = MainService.deviceModel;
+        if (model == null || model.isEmpty()) {
+            model = getSystemProperty("ro.build.huami.model");
+            MainService.deviceModel = model;
+        }
         boolean isStratos = Arrays.asList(Constants.BUILD_STRATOS_MODELS).contains(model);
         Logger.debug("isStratos: checking if model " + model + " is an Amazfit Stratos: " + isStratos);
         return isStratos;
     }
 
     public static boolean isVerge(){
-        String model = getSystemProperty("ro.build.huami.model");
+        String model = MainService.deviceModel;
+        if (model == null || model.isEmpty()) {
+            model = getSystemProperty("ro.build.huami.model");
+            MainService.deviceModel = model;
+        }
         boolean isVerge = Arrays.asList(Constants.BUILD_VERGE_MODELS).contains(model);
         Logger.debug("isVerge: checking if model " + model + " is an Amazfit Verge: " + isVerge);
         return isVerge;
+    }
+
+    public static boolean isNexo(){
+        String model = MainService.deviceModel;
+        if (model == null || model.isEmpty()) {
+            model = getSystemProperty("ro.build.huami.model");
+            MainService.deviceModel = model;
+        }
+        boolean isNexo = Arrays.asList(Constants.BUILD_NEXO_MODELS).contains(model);
+        Logger.debug("isNexo: checking if model " + model + " is an Amazfit Nexo: " + isNexo);
+        return isNexo;
     }
 
     /**

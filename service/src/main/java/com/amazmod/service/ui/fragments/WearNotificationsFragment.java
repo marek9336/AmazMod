@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amazmod.service.Constants;
 import com.amazmod.service.R;
 import com.amazmod.service.adapters.NotificationListAdapter;
 import com.amazmod.service.helper.RecyclerTouchListener;
@@ -328,14 +329,14 @@ public class WearNotificationsFragment extends Fragment {
     }
 
     private void resetNotificationsCounter() {
-        String data = DeviceUtil.systemGetString(mContext, "CustomWatchfaceData");
+        String data = DeviceUtil.systemGetString(mContext, Constants.CUSTOM_WATCHFACE_DATA);
         if (data == null || data.equals(""))
-            DeviceUtil.systemPutString(mContext, "CustomWatchfaceData", "{}");
+            DeviceUtil.systemPutString(mContext, Constants.CUSTOM_WATCHFACE_DATA, "{}");
 
         try {
             JSONObject json_data = new JSONObject(data);
             json_data.put("notifications", 0);
-            DeviceUtil.systemPutString(mContext, "CustomWatchfaceData", json_data.toString());
+            DeviceUtil.systemPutString(mContext, Constants.CUSTOM_WATCHFACE_DATA, json_data.toString());
         } catch (JSONException e) {
             Logger.error("AmazModLauncher refreshMessages JSONException: " + e.toString());
         }

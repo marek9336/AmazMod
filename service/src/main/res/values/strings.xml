@@ -50,4 +50,5 @@
     <string name="tap_to_cancel">TAP TO CANCEL</string>
     <string name="watch_battery">Watch\'s battery is under %s</string>
     <string name="phone_battery">Phones\'s battery is under %s</string>
+    <string name="accessibility_info">AmazMod Back Button</string>
 </resources>

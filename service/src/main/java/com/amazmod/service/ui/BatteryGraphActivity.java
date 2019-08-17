@@ -7,6 +7,9 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.core.content.ContextCompat;
+
+import android.support.wearable.internal.view.SwipeDismissLayout;
+import android.support.wearable.view.SwipeDismissFrameLayout;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -74,6 +77,14 @@ public class BatteryGraphActivity extends ListActivity {
         chart = findViewById(R.id.activity_battery_graph_chart);
         batteryValue = findViewById(R.id.activity_battery_value);
         graphRange = findViewById(R.id.activity_battery_days);
+
+        SwipeDismissFrameLayout swipeDismissFrameLayout = findViewById(R.id.activity_battery_graph_swipe_layout);
+        swipeDismissFrameLayout.addCallback(new SwipeDismissFrameLayout.Callback() {
+            @Override
+            public void onDismissed(SwipeDismissFrameLayout layout) {
+                finish();
+            }
+        });
 
         frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override

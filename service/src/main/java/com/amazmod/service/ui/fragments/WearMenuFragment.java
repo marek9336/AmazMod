@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -111,7 +112,7 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
                                     R.drawable.outline_widgets_white_24,
                                     R.drawable.outline_fullscreen_white_24,
                                     R.drawable.battery_unknown_white_24dp,
-                                    R.drawable.baseline_wifi_white_24,
+                                    R.drawable.baseline_wifi_off_white_24,
                                     R.drawable.baseline_perm_scan_wifi_white_24,
                                     R.drawable.baseline_highlight_white_24,
                                     R.drawable.ic_qrcode_white_24dp,
@@ -165,6 +166,9 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
     private WifiManager wfmgr;
     private Vibrator vibrator;
     private WidgetSettings widgetSettings;
+
+    private boolean isStart = true;
+    private long lastBroadcast;
 
     private static final int MENU_START = 9;
 
@@ -236,12 +240,12 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
         boolean state;
         for (int i=0; i<mItems.length; i++){
             try {
-                if (i == 0)
+                if (i == 5)
                     state = wfmgr.isWifiEnabled();
                 else if (i == (MENU_START + 12))
                     state = widgetSettings.get(Constants.PREF_NOTIFICATIONS_SCREEN_ON, 0) != 0;
                 else
-                    state = i < (MENU_START + 9) || i > (MENU_START + 11) || Settings.Secure.getInt(mContext.getContentResolver(), toggle[i], 0) != 0;
+                    state = i < (MENU_START + 9) || i > (MENU_START + 11) || DeviceUtil.systemGetInt(mContext, toggle[i], 0) != 0;
             } catch (NullPointerException e) {
                 state = true;
                 Logger.error("WearMenuFragment onCreate exception: " + e.toString());
@@ -300,10 +304,10 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
 
             case 5:
                 if (wfmgr.isWifiEnabled()) {
-                    items.get(0).state = false;
+                    items.get(5).state = false;
                     wfmgr.setWifiEnabled(false);
                 } else {
-                    items.get(0).state = true;
+                    items.get(5).state = true;
                     wfmgr.setWifiEnabled(true);
                 }
                 mAdapter.notifyDataSetChanged();
@@ -537,24 +541,46 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
 
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (isStart){
+                    isStart = false;
+                    return;
+                }
                 WifiInfo wifiInfo = wfmgr.getConnectionInfo();
-                Logger.debug("WearMenuFragment checkConnection wifiInfo.getSupplicantState: " + wifiInfo.getSupplicantState());
-                Logger.debug("WearMenuFragment checkConnection wifiInfo.SSID: " + wifiInfo.getSSID());
-                Logger.debug("WearMenuFragment checkConnection action: " + intent.getAction());
-                Logger.debug("WearMenuFragment checkConnection connected: " + intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false));
-                if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
-                    if (wifiInfo.getSupplicantState().toString().equals("COMPLETED"))
-                        if (receiverSSID == null)
-                            getSSID();
-                } else {
-                    vibrator.vibrate(100);
-                    Toast.makeText(mContext, "Wi-Fi Disconnected", Toast.LENGTH_SHORT).show();
+                String action = intent.getAction();
+                String supplicantState = wifiInfo.getSupplicantState().toString();
+                String ssid = wifiInfo.getSSID();
+                boolean isConnected = intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false);
+                Logger.debug("WearMenuFragment checkConnection action: " + action);
+                Logger.debug("WearMenuFragment checkConnection wifiInfo.getSupplicantState: " +supplicantState );
+                Logger.debug("WearMenuFragment checkConnection wifiInfo.SSID: " + ssid);
+                Logger.debug("WearMenuFragment checkConnection connected: " + isConnected);
+                if (WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION.equals(action)) {
+                    if (isConnected) {
+                        if (supplicantState.equals("COMPLETED"))
+                            if (receiverSSID == null)
+                                getSSID();
+                    } else {
+                        vibrator.vibrate(100);
+                        Toast.makeText(mContext, "Wi-Fi Disconnected", Toast.LENGTH_SHORT).show();
+                    }
+
+                } else if (ConnectivityManager.CONNECTIVITY_ACTION.equals(action)) {
+                    if ("COMPLETED".equals(supplicantState) && (System.currentTimeMillis() - lastBroadcast > 1000) && !ssid.contains("<unknown ssid>")) {
+                        Toast.makeText(mContext, "Wi-Fi Connected to:\n" + ssid, Toast.LENGTH_SHORT).show();
+                        lastBroadcast = System.currentTimeMillis();
+                        vibrator.vibrate(100);
+                    } else if ("DISCONNECTED".equals(supplicantState) || ssid.contains("<unknown ssid>")) {
+                        Toast.makeText(mContext, "Wi-Fi Disconnected", Toast.LENGTH_SHORT).show();
+                        lastBroadcast = System.currentTimeMillis();
+                        vibrator.vibrate(100);
+                    }
                 }
             }
         };
 
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mContext.registerReceiver(receiverConnection, intentFilter);
     }
 
@@ -584,6 +610,7 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
 
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mContext.registerReceiver(receiverSSID, intentFilter);
     }
 

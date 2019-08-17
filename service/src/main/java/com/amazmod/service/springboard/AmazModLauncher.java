@@ -425,9 +425,9 @@ public class AmazModLauncher extends AbstractPlugin {
     }
 
     private void refreshMessages() {
-        String data = DeviceUtil.systemGetString(mContext, "CustomWatchfaceData");
+        String data = DeviceUtil.systemGetString(mContext, Constants.CUSTOM_WATCHFACE_DATA);
         if (data == null || data.equals("")) {
-            DeviceUtil.systemPutString(mContext, "CustomWatchfaceData", "{}");
+            DeviceUtil.systemPutString(mContext, Constants.CUSTOM_WATCHFACE_DATA, "{}");
             notifications = 0;
         }
 

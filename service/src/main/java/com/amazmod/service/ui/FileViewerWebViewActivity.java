@@ -1,9 +1,9 @@
 package com.amazmod.service.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.wearable.view.BoxInsetLayout;
+import android.support.wearable.view.SwipeDismissFrameLayout;
 import android.support.wearable.view.WearableFrameLayout;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -35,6 +35,14 @@ public class FileViewerWebViewActivity extends Activity {
         webviewImage = findViewById(R.id.activity_file_viewer_webview_image);
         frameLayoutText = findViewById(R.id.activity_file_viewer_frame_layout_text);
         webviewText = findViewById(R.id.activity_file_viewer_webview_text);
+
+        SwipeDismissFrameLayout swipeDismissFrameLayout = findViewById(R.id.activity_file_viewer_swipe_layout);
+        swipeDismissFrameLayout.addCallback(new SwipeDismissFrameLayout.Callback() {
+            @Override
+            public void onDismissed(SwipeDismissFrameLayout layout) {
+                finish();
+            }
+        });
 
         if (mimeType.contains(IMAGE)) {
             frameLayoutText.setVisibility(View.GONE);

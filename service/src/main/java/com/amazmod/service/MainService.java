@@ -189,6 +189,8 @@ public class MainService extends Service implements Transporter.DataListener {
     private static final Handler stdHandler = new Handler();
     private static final Handler cstHandler = new Handler();
 
+    public static String deviceModel;
+
     private final Runnable sendStandardNotification = new Runnable() {
         public void run() {
 
@@ -535,9 +537,9 @@ public class MainService extends Service implements Transporter.DataListener {
 
         // Watchface data
         // Get already saved data
-        String data = DeviceUtil.systemGetString(context, "CustomWatchfaceData");
+        String data = DeviceUtil.systemGetString(context, Constants.CUSTOM_WATCHFACE_DATA);
         if (data == null || data.equals("")) {
-            DeviceUtil.systemPutString(context, "CustomWatchfaceData", "{}");//default
+            DeviceUtil.systemPutString(context, Constants.CUSTOM_WATCHFACE_DATA, "{}");//default
         }
         // Update the data
         try {
@@ -547,10 +549,10 @@ public class MainService extends Service implements Transporter.DataListener {
             json_data.put("phoneAlarm", phoneAlarm);
             json_data.put("updateTime", updateTime);
 
-            DeviceUtil.systemPutString(context, "CustomWatchfaceData", json_data.toString());
+            DeviceUtil.systemPutString(context, Constants.CUSTOM_WATCHFACE_DATA, json_data.toString());
         } catch (JSONException e) {
             //default
-            DeviceUtil.systemPutString(context, "CustomWatchfaceData", "{\"phoneBattery\":\"" + phoneBattery + "\",\"phoneAlarm\":\"" + phoneAlarm + "\",\"updateTime\":"+updateTime+"}");
+            DeviceUtil.systemPutString(context, Constants.CUSTOM_WATCHFACE_DATA, "{\"phoneBattery\":\"" + phoneBattery + "\",\"phoneAlarm\":\"" + phoneAlarm + "\",\"updateTime\":"+updateTime+"}");
         }
 
         // Calendar data
@@ -560,10 +562,10 @@ public class MainService extends Service implements Transporter.DataListener {
                 JSONObject json_data = new JSONObject(calendarEvents);
                 json_data.put("updateTime", updateTime);
                 // Update data
-                DeviceUtil.systemPutString(context, "CustomCalendarData", json_data.toString());
+                DeviceUtil.systemPutString(context, Constants.CUSTOM_CALENDAR_DATA, json_data.toString());
             } catch (JSONException e) {
                 //default
-                DeviceUtil.systemPutString(context, "CustomCalendarData", "{}");
+                DeviceUtil.systemPutString(context, Constants.CUSTOM_CALENDAR_DATA, "{}");
             }
         }
 
@@ -1094,6 +1096,10 @@ public class MainService extends Service implements Transporter.DataListener {
 
                                 }
                             }
+
+                            //Fix screenshot for Nexo
+                            if (SystemProperties.isNexo())
+                                command = command.replace("adb shell ", "");
                         }
 
                         Logger.debug("MainService executeShellCommand isWaitOutput command: {}", command);
@@ -1389,7 +1395,7 @@ public class MainService extends Service implements Transporter.DataListener {
 
                         } else if ("0".equals(connectionStatus)) {
                             Logger.trace("MainService registerConnectionMonitor queueing disconnected customAlert");
-                            cstHandler.postDelayed(sendAlertNotification, 1800);
+                            cstHandler.postDelayed(sendAlertNotification, 5000);
                             isRunning = true;
                         }
 
@@ -1457,7 +1463,7 @@ public class MainService extends Service implements Transporter.DataListener {
                     notificationData.setText(getString(R.string.phone_disconnected));
                     vibrate = Constants.VIBRATION_LONG;
 
-                    stdHandler.postDelayed(sendStandardNotification, 1800);
+                    stdHandler.postDelayed(sendStandardNotification, 5000);
                     isRunning = true;
                     Logger.trace("MainService sendStandardAlert send disconnected alert");
 
@@ -1502,9 +1508,9 @@ public class MainService extends Service implements Transporter.DataListener {
         int notifications = 0;
 
         // Get already saved data
-        String data = DeviceUtil.systemGetString(context, "CustomWatchfaceData");
+        String data = DeviceUtil.systemGetString(context, Constants.CUSTOM_WATCHFACE_DATA);
         if (data == null || data.equals("")) {
-            DeviceUtil.systemPutString(context, "CustomWatchfaceData", "{}");//default
+            DeviceUtil.systemPutString(context, Constants.CUSTOM_WATCHFACE_DATA, "{}");//default
         }
 
         // Get data
@@ -1528,10 +1534,10 @@ public class MainService extends Service implements Transporter.DataListener {
             JSONObject json_data = new JSONObject(data);
             json_data.put("notifications", notifications);
 
-            DeviceUtil.systemPutString(context, "CustomWatchfaceData", json_data.toString());
+            DeviceUtil.systemPutString(context, Constants.CUSTOM_WATCHFACE_DATA, json_data.toString());
         } catch (JSONException e) {
             //default
-            DeviceUtil.systemPutString(context, "CustomWatchfaceData", "{\"notifications\":" + notifications + "}");
+            DeviceUtil.systemPutString(context, Constants.CUSTOM_WATCHFACE_DATA, "{\"notifications\":" + notifications + "}");
             Logger.error(e, "notificationCounter JSONException02: " + e.getMessage());
         }
     }

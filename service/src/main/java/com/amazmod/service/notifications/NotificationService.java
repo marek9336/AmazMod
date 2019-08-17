@@ -138,7 +138,7 @@ public class NotificationService {
         bundle.putParcelable(Notification.EXTRA_LARGE_ICON_BIG, bitmap);
         bundle.putParcelable(Notification.EXTRA_LARGE_ICON, bitmap);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(android.R.drawable.ic_dialog_email)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)

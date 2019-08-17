@@ -20,6 +20,7 @@ import com.amazmod.service.Constants;
 import com.amazmod.service.R;
 import com.amazmod.service.util.DeviceUtil;
 import com.amazmod.service.util.ExecCommand;
+import com.amazmod.service.util.SystemProperties;
 import com.amazmod.service.util.WidgetsUtil;
 
 import org.tinylog.Logger;
@@ -121,6 +122,12 @@ public class DummyActivity extends Activity implements DelayedConfirmationView.D
         startActivity(intent);
         try {
             if (appTag.equals(Constants.MY_APP) || appTag.equals(Constants.OTHER_APP)) {
+
+                if (SystemProperties.isNexo()) {
+                    finish();
+                    return;
+                }
+
                 Logger.debug( "DummyActivity onTimerFinished restart launcher");
                 //Runtime.getRuntime().exec("adb shell am force-stop com.huami.watch.launcher;exit");
                 new ExecCommand(ExecCommand.ADB, "adb shell am force-stop com.huami.watch.launcher");
@@ -146,6 +153,7 @@ public class DummyActivity extends Activity implements DelayedConfirmationView.D
             } else if (appTag.contains(".apk")) {
                 DeviceUtil.installPackage(this, getPackageName(), appTag);
             }
+
         } catch (Exception e) {
             Logger.error(e, "DummyActivity onTimerFinished exception: {}", e.getMessage());
         }

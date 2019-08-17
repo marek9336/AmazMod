@@ -3,7 +3,10 @@ package com.amazmod.service.ui.fragments;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AppOpsManager;
 import android.app.Fragment;
+import android.app.usage.StorageStats;
+import android.app.usage.StorageStatsManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,8 +18,11 @@ import android.content.pm.PackageStats;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.os.storage.StorageManager;
+import android.provider.Settings;
 import android.support.wearable.view.WearableListView;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
@@ -342,24 +348,52 @@ public class WearAppsFragment extends Fragment implements WearableListView.Click
 
         PackageManager pm = mContext.getPackageManager();
         try {
-            Method getPackageSizeInfo = pm.getClass().getMethod(
-                    "getPackageSizeInfo", String.class, IPackageStatsObserver.class);
-            getPackageSizeInfo.invoke(pm, pkgName,
-                    new IPackageStatsObserver.Stub() {
-                        @Override
-                        public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
-                            final String size = Formatter.formatFileSize(mContext, pStats.codeSize + pStats.cacheSize + pStats.dataSize);
-                            appInfo.setSize(size);
-                            Logger.info("WearAppsFragment pkgName: " + pkgName + " codeSize: "
-                                    + pStats.codeSize + " cacheSize: " + pStats.cacheSize + " dataSize: " + pStats.dataSize);
-                        }
-                    });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Logger.debug("isAccessGranted: {}", isAccessGranted());
+                if (!isAccessGranted()) {
+                    Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+                    startActivity(intent);
+                }
+                final StorageStatsManager storageStatsManager = (StorageStatsManager) mContext.getSystemService(Context.STORAGE_STATS_SERVICE);
+                final StorageManager storageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
+                ApplicationInfo ai = mContext.getPackageManager().getApplicationInfo(pkgName, 0);
+                StorageStats storageStats = storageStatsManager.queryStatsForUid(ai.storageUuid, ai.uid);
+                final String size = Formatter.formatFileSize(mContext, storageStats.getAppBytes()
+                        + storageStats.getCacheBytes() + storageStats.getDataBytes());
+                appInfo.setSize(size);
+            } else {
+                Method getPackageSizeInfo = pm.getClass().getMethod(
+                        "getPackageSizeInfo", String.class, IPackageStatsObserver.class);
+                getPackageSizeInfo.invoke(pm, pkgName,
+                        new IPackageStatsObserver.Stub() {
+                            @Override
+                            public void onGetStatsCompleted(PackageStats pStats, boolean succeeded) throws RemoteException {
+                                final String size = Formatter.formatFileSize(mContext, pStats.codeSize + pStats.cacheSize + pStats.dataSize);
+                                appInfo.setSize(size);
+                                Logger.info("WearAppsFragment pkgName: " + pkgName + " codeSize: "
+                                        + pStats.codeSize + " cacheSize: " + pStats.cacheSize + " dataSize: " + pStats.dataSize);
+                            }
+                        });
+            }
         } catch (Exception ex) {
             appInfo.setSize("Unknown Size");
             Logger.error(ex,"WearAppsFragment createAppInfo exception: {}", ex.getMessage());
         }
 
         return appInfo;
+    }
+
+    private boolean isAccessGranted() {
+        try {
+            ApplicationInfo applicationInfo = mContext.getPackageManager().getApplicationInfo(mContext.getPackageName(), 0);
+            AppOpsManager appOpsManager = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);
+            int mode = 0;
+            mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    applicationInfo.uid, applicationInfo.packageName);
+            return (mode == AppOpsManager.MODE_ALLOWED);
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
     public void uninstallPackage(Context context, String packageName) {
