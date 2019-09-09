@@ -74,6 +74,7 @@ public class NotificationFragment extends Fragment implements DelayedConfirmatio
 
     private String key, mode, notificationKey, selectedReply, selectedSilenceTime;
     private boolean enableInvertedTheme, disableDelay;
+    public static boolean keyboardIsEnable = false;
 
     private Context mContext;
     private FragmentUtil util;
@@ -130,103 +131,105 @@ public class NotificationFragment extends Fragment implements DelayedConfirmatio
     }
 
     private void updateContent() {
+        try {
+            util = new FragmentUtil(mContext);
+            disableDelay = util.getDisableDelay();
 
-        util = new FragmentUtil(mContext);
-        disableDelay = util.getDisableDelay();
+            //Load preferences
+            boolean disableNotificationText = util.getDisableNotificationText();
+            final boolean notificationHasHideReplies = NotificationStore.getHideReplies(key);
+            final boolean notificationHasForceCustom = NotificationStore.getForceCustom(key);
+            enableInvertedTheme = util.getInvertedTheme();
 
-        //Load preferences
-        boolean disableNotificationText = util.getDisableNotificationText();
-        final boolean notificationHasHideReplies = NotificationStore.getHideReplies(key);
-        final boolean notificationHasForceCustom = NotificationStore.getForceCustom(key);
-        enableInvertedTheme = util.getInvertedTheme();
+            Logger.info("NotificationFragment updateContent key: {} dt: {} hr: {} fc: {}",
+                    key, disableNotificationText, notificationHasHideReplies, notificationHasForceCustom);
 
-        Logger.info("NotificationFragment updateContent key: {} dt: {} hr: {} fc: {}",
-                key, disableNotificationText, notificationHasHideReplies, notificationHasForceCustom);
+            initView();
+            setTheme();
 
-        initView();
-        setTheme();
+            if (notificationHasHideReplies) {
 
-        if (notificationHasHideReplies) {
+                replyButton.setVisibility(View.GONE);
 
-            replyButton.setVisibility(View.GONE);
-
-        } else {
-            //Replies related stuff
-            replyButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Logger.debug("NotificationFragment updateContent: replyButton clicked!");
-                    if (repliesListView.getVisibility() == View.VISIBLE) {
-                        repliesListView.setVisibility(View.GONE);
-                        focusOnViewBottom(scrollView, replyButton);
-                    } else {
-                        // Prepare the View for the animation
-                        repliesListView.setVisibility(View.VISIBLE);
-                        muteListView.setVisibility(View.GONE);
-                        focusOnView(scrollView, replyButton);
+            } else {
+                //Replies related stuff
+                replyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Logger.debug("NotificationFragment updateContent: replyButton clicked!");
+                        if (repliesListView.getVisibility() == View.VISIBLE) {
+                            repliesListView.setVisibility(View.GONE);
+                            focusOnViewBottom(scrollView, replyButton);
+                        } else {
+                            // Prepare the View for the animation
+                            repliesListView.setVisibility(View.VISIBLE);
+                            muteListView.setVisibility(View.GONE);
+                            focusOnView(scrollView, replyButton);
+                        }
                     }
-                }
-            });
-            loadReplies();
-        }
+                });
+                loadReplies();
+            }
 
-        if (notificationHasForceCustom && notificationHasHideReplies) {
+            if (notificationHasForceCustom && notificationHasHideReplies) {
 
-            muteButton.setVisibility(View.GONE);
-            deleteButton.setVisibility(View.GONE);
+                muteButton.setVisibility(View.GONE);
+                deleteButton.setVisibility(View.GONE);
 
-        } else {
-            //Delete related stuff
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Logger.debug("NotificationFragment updateContent: deleteButton clicked!");
-                    muteListView.setVisibility(View.GONE);
-                    repliesListView.setVisibility(View.GONE);
-                    sendDeleteCommand(v);
-                }
-            });
-
-            //Mute related stuff
-            muteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Logger.debug("NotificationFragment updateContent: muteButton clicked!");
-                    if (muteListView.getVisibility() == View.VISIBLE) {
+            } else {
+                //Delete related stuff
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Logger.debug("NotificationFragment updateContent: deleteButton clicked!");
                         muteListView.setVisibility(View.GONE);
-                    } else {
-                        //Prepare the View for the animation
-                        muteListView.setVisibility(View.VISIBLE);
                         repliesListView.setVisibility(View.GONE);
-                        focusOnView(scrollView, muteButton);
+                        sendDeleteCommand(v);
                     }
-                }
-            });
-            loadMuteOptions();
+                });
+
+                //Mute related stuff
+                muteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Logger.debug("NotificationFragment updateContent: muteButton clicked!");
+                        if (muteListView.getVisibility() == View.VISIBLE) {
+                            muteListView.setVisibility(View.GONE);
+                        } else {
+                            //Prepare the View for the animation
+                            muteListView.setVisibility(View.VISIBLE);
+                            repliesListView.setVisibility(View.GONE);
+                            focusOnView(scrollView, muteButton);
+                        }
+                    }
+                });
+                loadMuteOptions();
+            }
+
+            populateNotificationIcon(icon, iconBadge, notificationData);
+
+            if (hasPicture(notificationData)) {
+                populateNotificationPicture(picture, notificationData);
+                Logger.trace("hasPicture = true");
+                title.setText(String.format("%s - %s", notificationData.getTitle(), notificationData.getTime()));
+                time.setVisibility(View.GONE);
+                text.setVisibility(View.GONE);
+
+            } else {
+                Logger.trace("hasPicture = false");
+                title.setText(notificationData.getTitle());
+                time.setText(notificationData.getTime());
+                text.setText(notificationData.getText());
+            }
+
+            if (disableNotificationText)
+                hideContent();
+
+            doVibration(notificationData.getVibration());
+
+        } catch (NullPointerException exception) {
+            Logger.error(exception, exception.getMessage());
         }
-
-        populateNotificationIcon(icon, iconBadge, notificationData);
-
-        if (hasPicture(notificationData)) {
-            populateNotificationPicture(picture, notificationData);
-            Logger.trace("hasPicture = true");
-            title.setText(String.format("%s - %s", notificationData.getTitle(), notificationData.getTime()));
-            time.setVisibility(View.GONE);
-            text.setVisibility(View.GONE);
-
-        } else {
-            Logger.trace("hasPicture = false");
-            title.setText(notificationData.getTitle());
-            time.setText(notificationData.getTime());
-            text.setText(notificationData.getText());
-
-        }
-
-        if (disableNotificationText)
-            hideContent();
-
-        doVibration(notificationData.getVibration());
-
     }
 
     private void initView() {
@@ -265,7 +268,7 @@ public class NotificationFragment extends Fragment implements DelayedConfirmatio
 
     private void setTheme() {
         //Increase minimum height so reply button stays at the Verges bottom of screen, just as on Pace and Stratos
-        if (SystemProperties.isVerge()){
+        if (SystemProperties.isVerge()) {
             int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics());
             replies_layout.setMinimumHeight(px);
         }
@@ -326,6 +329,8 @@ public class NotificationFragment extends Fragment implements DelayedConfirmatio
     }
 
     private boolean hasPicture(NotificationData notificationData) {
+        if (notificationData == null)
+            return false;
         byte[] pictureData = notificationData.getPicture();
         return (pictureData != null) && (pictureData.length > 0);
     }
@@ -430,6 +435,8 @@ public class NotificationFragment extends Fragment implements DelayedConfirmatio
                 repliesEditTextContainer.setVisibility(View.VISIBLE);
                 ((NotificationWearActivity) getActivity()).stopTimerFinish();
                 ((NotificationWearActivity) getActivity()).setKeyboardVisible(true);
+                keyboardIsEnable = true;
+                Logger.debug("keyboard IS visible");
 
                 replyEditSend.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -446,6 +453,8 @@ public class NotificationFragment extends Fragment implements DelayedConfirmatio
                         scrollView.setVisibility(View.VISIBLE);
                         repliesEditTextContainer.setVisibility(View.GONE);
                         ((NotificationWearActivity) getActivity()).setKeyboardVisible(false);
+                        keyboardIsEnable = false;
+                        Logger.debug("keyboard NOT visible");
                         ((NotificationWearActivity) getActivity()).startTimerFinish();
                     }
                 });
@@ -529,6 +538,8 @@ public class NotificationFragment extends Fragment implements DelayedConfirmatio
 
     private void sendReply(View v) {
         ((NotificationWearActivity) getActivity()).setKeyboardVisible(false);
+        keyboardIsEnable = false;
+        Logger.debug("keyboard NOT visible");
         sendCommand(ACTION_REPLY, v);
     }
 

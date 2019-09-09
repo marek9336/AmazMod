@@ -31,6 +31,7 @@ import com.amazmod.service.adapters.AppInfoAdapter;
 import com.amazmod.service.helper.RecyclerTouchListener;
 import com.amazmod.service.support.AppInfo;
 import com.amazmod.service.ui.FileViewerWebViewActivity;
+import com.amazmod.service.util.CaseInsensitiveFileComparator;
 import com.amazmod.service.util.DeviceUtil;
 import com.amazmod.service.util.ExecCommand;
 import com.amazmod.service.util.SystemProperties;
@@ -41,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.Callable;
@@ -431,9 +433,9 @@ public class WearFilesFragment extends Fragment {
         }
 
         if (!dirs.isEmpty())
-            Collections.sort(dirs);
+            Collections.sort(dirs, new CaseInsensitiveFileComparator());
         if (!files.isEmpty()) {
-            Collections.sort(files);
+            Collections.sort(files, new CaseInsensitiveFileComparator());
             dirs.addAll(files);
         }
 
@@ -513,7 +515,8 @@ public class WearFilesFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         showToast("Please wait until installation finishes…");
                         if (file.toString().contains("service-")) {
-                            DeviceUtil.systemPutAdb(mContext,"screen_off_timeout", "200000");
+                            //DeviceUtil.systemPutAdb(mContext,"screen_off_timeout", "200000");
+                            new ExecCommand("adb shell settings put system screen_off_timeout 200000");
                             sleep(1000);
                             new ExecCommand("adb install -r " + file.getAbsolutePath());
                         } else {

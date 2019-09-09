@@ -187,7 +187,7 @@ public class FileExplorerActivity extends BaseAppCompatActivity {
                 // (optional) change text size, default = 14sp
                 .setTextSize(14)
                 // (optional) set max lines, default = 2
-                .setMessageMaxLines(2)
+                .setMessageMaxLines(4)
                 // (optional) register onDisplayListener
                 .setOnDisplayListener(new SnackProgressBarManager.OnDisplayListener() {
                     @Override
@@ -326,6 +326,7 @@ public class FileExplorerActivity extends BaseAppCompatActivity {
                 //.disableTitle(true)
                 //.titleFollowsDir(true)
                 //.displayPath(true)
+                .withResources(R.string.file_choose_title, R.string.select, R.string.cancel)
                 .enableOptions(false)
                 .withStartFile(lastPath)
                 .withFilter(false, false)
@@ -474,8 +475,9 @@ public class FileExplorerActivity extends BaseAppCompatActivity {
                             DecimalFormat df = new DecimalFormat("#.00");
 
                             String duration = DurationFormatUtils.formatDuration(remainingTime, "mm:ss", true);
-                            String smallMessage = getString(R.string.sending) + " \"" + file.getName() + "\", " + getString(R.string.wait);
-                            String message = smallMessage + "\n" + duration + " - " + remaingSize + " - " + df.format(speed) + " kb/s";
+                            String message = getString(R.string.sending) + " \"" + file.getName() + "\", " + getString(R.string.wait) + " - " + duration + " - " + remaingSize + " - " + df.format(speed) + " kb/s";
+                            String messageNotification = "\"" + file.getName() + "\", " + duration + " - " + remaingSize + " - " + df.format(speed) + " kb/s";
+                            String smallMessage = getString(R.string.sending);
 
                             //Logger.debug("continueNotification: {} \\ lastUpdate: {}", continueNotification, lastUpdate);
                             currentTime = System.currentTimeMillis();
@@ -483,7 +485,7 @@ public class FileExplorerActivity extends BaseAppCompatActivity {
                                 if (continueNotification) {
 
                                     lastUpdate = currentTime;
-                                    updateNotification(message, smallMessage, (int) progress);
+                                    updateNotification(messageNotification, smallMessage, (int) progress);
 
                                 } else {
 
@@ -792,8 +794,9 @@ public class FileExplorerActivity extends BaseAppCompatActivity {
                                     DecimalFormat df = new DecimalFormat("#.00");
 
                                     String duration = DurationFormatUtils.formatDuration(remainingTime, "mm:ss", true);
-                                    String smallMessage = getString(R.string.downloading) + " \"" + fileData.getName() + "\", " + getString(R.string.wait);
-                                    String message = smallMessage + "\n" + duration + " - " + remainingSize + " - " + df.format(speed) + " kb/s";
+                                    String message = getString(R.string.downloading) + " \"" + fileData.getName() + "\", " + getString(R.string.wait) + " - " + duration + " - " + remainingSize + " - " + df.format(speed) + " kb/s";
+                                    String messageNotification = "\"" + fileData.getName() + "\", " + duration + " - " + remainingSize + " - " + df.format(speed) + " kb/s";
+                                    String smallMessage = getString(R.string.downloading);
 
                                     //Logger.debug("continueNotification: {} \\ lastUpdate: {}", continueNotification, lastUpdate);
                                     currentTime = System.currentTimeMillis();
@@ -801,7 +804,7 @@ public class FileExplorerActivity extends BaseAppCompatActivity {
                                         if (continueNotification) {
 
                                             lastUpdate = currentTime;
-                                            updateNotification(message, smallMessage, (int) progress);
+                                            updateNotification(messageNotification, smallMessage, (int) progress);
 
                                         } else {
 
@@ -1012,19 +1015,15 @@ public class FileExplorerActivity extends BaseAppCompatActivity {
                                         filesData.add(0, parentDirectory);
                                     }
 
-                                    Collections.sort(filesData, new Comparator<FileData>() {
-                                        @Override
-                                        public int compare(FileData left, FileData right) {
-                                            if (left.isDirectory() && !right.isDirectory()) {
-                                                return -1;
-                                            }
-
-                                            if (right.isDirectory() && !left.isDirectory()) {
-                                                return 0;
-                                            }
-
-                                            return left.getName().compareTo(right.getName());
+                                    Collections.sort(filesData, (left, right) -> {
+                                        if (left.isDirectory() && !right.isDirectory()) {
+                                            return -1;
                                         }
+
+                                        if (right.isDirectory() && !left.isDirectory()) {
+                                            return 0;
+                                        }
+                                        return left.getName().compareToIgnoreCase(right.getName());
                                     });
 
                                     fileExplorerAdapter.clear();

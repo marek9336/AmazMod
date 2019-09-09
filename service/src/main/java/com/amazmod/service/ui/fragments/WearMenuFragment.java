@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,9 +29,11 @@ import android.widget.Toast;
 import com.amazmod.service.Constants;
 import com.amazmod.service.R;
 import com.amazmod.service.adapters.MenuListAdapter;
+import com.amazmod.service.events.HourlyChime;
 import com.amazmod.service.events.incoming.EnableLowPower;
 import com.amazmod.service.events.incoming.RevokeAdminOwner;
 import com.amazmod.service.models.MenuItems;
+import com.amazmod.service.receiver.AlarmReceiver;
 import com.amazmod.service.springboard.LauncherWearGridActivity;
 import com.amazmod.service.springboard.WidgetSettings;
 import com.amazmod.service.springboard.WidgetsReorderActivity;
@@ -56,8 +59,9 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
 	private WearableListView listView;
     private DelayedConfirmationView delayedConfirmationView;
     private TextView mHeader, textView1, textView2;
+    public static boolean chimeEnabled;
 
-	private String[] mItems = { "Apps Manager",
+    private String[] mItems = { "Apps Manager",
                                 "Files Manager",
                                 "Reorder Widgets",
                                 "Screen Settings",
@@ -80,7 +84,8 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
                                 "Away Alert (iOS)",
                                 "Notifications ScreenOn",
                                 "Change Input Method",
-                                "Device Info"};
+                                "Device Info",
+                                "Hourly Chime"};
 
     private int[] mImagesOn = { R.drawable.ic_action_select_all,
                                 R.drawable.outline_folder_white_24,
@@ -105,7 +110,8 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
                                 R.drawable.ic_alarm_light_white_24dp,
                                 R.drawable.outline_flash_on_white_24,
                                 R.drawable.outline_keyboard_white_24,
-                                R.drawable.baseline_info_white_24};
+                                R.drawable.baseline_info_white_24,
+                                R.drawable.hourly_chime_on};
 
     private int[] mImagesOff = {    R.drawable.ic_action_select_all,
                                     R.drawable.outline_folder_white_24,
@@ -130,7 +136,8 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
                                     R.drawable.ic_alarm_light_off_white_24dp,
                                     R.drawable.outline_flash_off_white_24,
                                     R.drawable.outline_keyboard_white_24,
-                                    R.drawable.baseline_info_white_24};
+                                    R.drawable.baseline_info_white_24,
+                                    R.drawable.hourly_chime_off};
 
     private String[] toggle = { "",
                                 "",
@@ -153,6 +160,7 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
                                 "measurement",
                                 "huami.watch.localonly.ble_lost_anti_lost",
                                 "huami.watch.localonly.ble_lost_far_away",
+                                "",
                                 "",
                                 "",
                                 ""};
@@ -182,10 +190,8 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         //notificationData = NotificationData.fromBundle(getArguments());
         Logger.info("WearMenuFragment onCreate");
-
     }
 
     @Override
@@ -244,6 +250,8 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
                     state = wfmgr.isWifiEnabled();
                 else if (i == (MENU_START + 12))
                     state = widgetSettings.get(Constants.PREF_NOTIFICATIONS_SCREEN_ON, 0) != 0;
+                else if (i == (MENU_START + 15))
+                    state = chimeEnabled;
                 else
                     state = i < (MENU_START + 9) || i > (MENU_START + 11) || DeviceUtil.systemGetInt(mContext, toggle[i], 0) != 0;
             } catch (NullPointerException e) {
@@ -353,6 +361,19 @@ public class WearMenuFragment extends Fragment implements WearableListView.Click
 
             case MENU_START + 14:
                 startWearGridActivity(LauncherWearGridActivity.INFO);
+                break;
+
+            case MENU_START + 15:
+                if (!chimeEnabled){
+                    HourlyChime.setHourlyChime(mContext, true);
+                    chimeEnabled = true;
+                    items.get(MENU_START + 15).state = true;
+                } else {
+                    HourlyChime.setHourlyChime(mContext, false);
+                    chimeEnabled = false;
+                    items.get(MENU_START + 15).state = false;
+                }
+                mAdapter.notifyDataSetChanged();
                 break;
 
             default:

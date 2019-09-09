@@ -1,5 +1,7 @@
 package com.amazmod.service;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.app.admin.DevicePolicyManager;
 import android.app.job.JobInfo;
@@ -31,11 +33,13 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
+import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.amazmod.service.db.model.BatteryDbEntity;
 import com.amazmod.service.db.model.BatteryDbEntity_Table;
 import com.amazmod.service.events.HardwareButtonEvent;
+import com.amazmod.service.events.HourlyChime;
 import com.amazmod.service.events.NightscoutDataEvent;
 import com.amazmod.service.events.ReplyNotificationEvent;
 import com.amazmod.service.events.SilenceApplicationEvent;
@@ -57,6 +61,7 @@ import com.amazmod.service.events.incoming.Watchface;
 import com.amazmod.service.music.MusicControlInputListener;
 import com.amazmod.service.notifications.NotificationService;
 import com.amazmod.service.receiver.AdminReceiver;
+import com.amazmod.service.receiver.AlarmReceiver;
 import com.amazmod.service.receiver.NotificationReplyReceiver;
 import com.amazmod.service.settings.SettingsManager;
 import com.amazmod.service.springboard.WidgetSettings;
@@ -83,6 +88,7 @@ import com.raizlabs.android.dbflow.sql.language.SQLite;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.tinylog.Logger;
@@ -248,6 +254,9 @@ public class MainService extends Service implements Transporter.DataListener {
         settings.reload();
 
         // Restore system settings after service update
+        new ExecCommand("adb shell settings put system screen_off_timeout 14000");
+        Logger.debug("Restore APK_INSTALL screen timeout");
+        /*
         try {
             if (new File("/system/xbin/su").exists()) { //Test for root
                 //Runtime.getRuntime().exec("adb shell echo APK_INSTALL > /sys/power/wake_unlock;exit");
@@ -262,6 +271,7 @@ public class MainService extends Service implements Transporter.DataListener {
             Logger.error(e, "onCreate: exception while restoring wakelock/screen timeout: {}", e.getMessage());
         }
         //new ExecCommand("adb shell \"adb kill-server\"", true);
+        */
 
         // Register power disconnect receiver
         batteryFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -381,7 +391,6 @@ public class MainService extends Service implements Transporter.DataListener {
             } else
                 Logger.error("MainService error staring BatteryJobService: null jobScheduler!");
         }
-
     }
 
     @Override
@@ -605,14 +614,42 @@ public class MainService extends Service implements Transporter.DataListener {
         // Get the list of installed apps.
         List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
 
-        // Found widgets
-        String widgets = "";
+        // Saved widgets
+        String widget_order_in = DeviceUtil.systemGetString(context, Constants.WIDGET_ORDER_IN);
 
+        //Create empty list
+        ArrayList<String> in_widgets = new ArrayList<String>();
+        ArrayList<Integer> in_widgets_pos = new ArrayList<Integer>();
+        ArrayList<Boolean> in_widgets_enabled = new ArrayList<Boolean>();
+        try {
+            //Parse JSON
+            JSONObject root = new JSONObject(widget_order_in);
+            JSONArray data = root.getJSONArray("data");
+
+            //Data array contains all the elements
+            for (int x = 0; x < data.length(); x++) {
+                //Get item
+                JSONObject item = data.getJSONObject(x);
+
+                //String pkg = item.getString("pkg");
+                int position = Integer.parseInt(item.getString("srl"));
+                boolean enable = item.getInt("enable") == 1;
+
+                in_widgets.add(item.getString("pkg"));
+                in_widgets_pos.add(position);
+                in_widgets_enabled.add(enable);
+            }
+        } catch (JSONException e) {
+            //e.printStackTrace();
+        }
+
+        // Find widgets
+        String widgets = "";
+        int count = 0 ;
         for (ApplicationInfo packageInfo : packages) {
             //Log.d(TAG, "Installed package :" + packageInfo.packageName);
             //Log.d(TAG, "Source dir : " + packageInfo.sourceDir);
             //Log.d(TAG, "Launch Activity :" + pm.getLaunchIntentForPackage(packageInfo.packageName));
-
             Bundle bundle = packageInfo.metaData;
             if (bundle == null) continue;
             try {
@@ -627,8 +664,16 @@ public class MainService extends Service implements Transporter.DataListener {
                     Resources resources = getApplicationContext().getPackageManager().getResourcesForApplication(packageInfo.packageName);
                     String[] inArray = resources.getStringArray(id);
 
+                    int position = 99;
+                    boolean enabled = false;
+                    if(in_widgets.contains(packageInfo.packageName)) {
+                        position = in_widgets_pos.get(in_widgets.indexOf(packageInfo.packageName));
+                        enabled = in_widgets_enabled.get(in_widgets.indexOf(packageInfo.packageName));
+                    }
+
                     // Add in widgets
-                    widgets += packageInfo.packageName+"|"+inArray[0]+"|"+name+",";
+                    widgets += (count>0?",":"") + "{\"pkg\":\""+packageInfo.packageName+"\",\"activity\":\""+inArray[0]+"\",\"name\":\""+name+"\",\"position\":"+position+",\"enabled\":"+enabled+"}";
+                    count++;
                     //inArray[0].split("/")[1]
 
                     // Log
@@ -641,7 +686,7 @@ public class MainService extends Service implements Transporter.DataListener {
             }
         }
 
-        this.widgetsData.setPackages(widgets);
+        this.widgetsData.setPackages("{\"widgets\":["+widgets+"]}");
         // Send the transmit
         Logger.debug("MainService requestWidgets widgetsData: " + widgetsData.getPackages());
         send(Transport.WIDGETS_DATA, widgetsData.toDataBundle());
@@ -1019,9 +1064,10 @@ public class MainService extends Service implements Transporter.DataListener {
                             if (apk.exists()) {
                                 if (apkFile.contains("service-")) {
                                     showConfirmationWearActivity("Service Update", "0");
-                                    DeviceUtil.systemPutAdb(context,"screen_off_timeout", "200000");
+                                    //DeviceUtil.systemPutAdb(context,"screen_off_timeout", "200000");
+                                    new ExecCommand("adb shell settings put system screen_off_timeout 200000");
                                     Thread.sleep(1000);
-                                    new ExecCommand("adb install -r " + apkFile);
+                                    new ExecCommand("adb install -r -d " + apkFile);
 
                                 } else {
                                     showConfirmationWearActivity("Installing APK", "0");
@@ -1623,11 +1669,16 @@ public class MainService extends Service implements Transporter.DataListener {
     private void saveDisconnectionLog() {
         final int lines = settingsManager.getInt(Constants.PREF_LOG_LINES, Constants.PREF_DEFAULT_LOG_LINES);
         if (BuildConfig.VERSION_NAME.contains("dev") && lines > 128) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
-            String dateStamp = sdf.format(new Date());
-            String filename = "/sdcard/disconnection_log_" + dateStamp + ".txt";
-            new ExecCommand(ExecCommand.ADB, "adb shell logcat -d -t " + String.valueOf(lines) + " -v long -f " + filename);
-            Logger.error("**** Disconnected log saved ****");
+            File file = new File("/sdcard/Logs");
+            boolean saveDirExists;
+            saveDirExists = file.exists() || file.mkdirs();
+            if (saveDirExists) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+                String dateStamp = sdf.format(new Date());
+                String filename = "/sdcard/Logs/disconnection_log_" + dateStamp + ".txt";
+                new ExecCommand(ExecCommand.ADB, "adb shell logcat -d -t " + String.valueOf(lines) + " -v long -f " + filename);
+                Logger.error("**** Disconnected log saved ****");
+            }
         }
     }
 

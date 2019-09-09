@@ -14,9 +14,11 @@
     <string name="sync_settings">Sincronizzazione impostazioni…</string>
     <string name="brightness">Luminosità</string>
     <string name="tweaking">Tweaking</string>
+    <string name="widgets">Widgets</string>
     <string name="watchface">GreatFit / Calendario</string>
     <string name="stats">Statistiche</string>
     <string name="changelog">Changelog</string>
+    <string name="rate_app">Vota App</string>
     <string name="enable">Attiva</string>
     <string name="cancel">Annulla</string>
     <string name="select_unselect_all">Seleziona/Deseleziona tutto</string>
@@ -38,6 +40,7 @@
     <string name="cant_uplaod_directory">Impossibile effettuare l\'upload della directory</string>
     <string name="sending">Invio in corso</string>
     <string name="wait">attendere prego</string>
+    <string name="file_choose_title">Scegli uno o più file</string>
     <string name="cant_upload_file">Impossibile effettuare l\'upload del file</string>
     <string name="cant_download_file">Impossibile effettuare il download del file</string>
     <string name="file_upload_canceled">Upload del file annullato</string>
@@ -132,7 +135,7 @@
     <string name="pref_phone_connect_disconnect_alert">Notifica connessione/disconnessione</string>
     <string name="pref_phone_connect_disconnect_alert_summary">L\'orologio vibrerà e visualizzerà lo stato di connessione con il telefono quando esso si connette/disconnette.</string>
     <string name="intro_title_1">Benvenuto in AmazMod!</string>
-    <string name="intro_description_1">Segui questa presentazione per sapere come installare l\'app di servizio sull\'orologio e concedere l\'accesso da parte dell\'app alle notifiche sul telefono</string>
+    <string name="intro_description_1">Segui questa presentazione per sapere come installare il service sull\'orologio e concedere l\'accesso da parte dell\'app alle notifiche sul telefono.</string>
     <string name="intro_title_permissions">Accesso alle notifiche</string>
     <string name="intro_description_permissions">AmazMod richiede l\'accesso alle notifiche in modo da poterle inviare all\'orologio, clicca sul bottone in basso e abilita i permessi alle notifiche, poi torna indietro alla presentazione</string>
     <string name="intro_label_grant_permissions">Dai il permesso per l\'accesso alle notifiche prima di procedere</string>
@@ -224,9 +227,9 @@ Goditi l\'uso di AmazMod!\"</string>
     <string name="restart_launcher">Riavvia launcher</string>
     <string name="enable_apps_list">Attiva applist</string>
     <string name="disable_apps_list">Disattiva applist</string>
-    <string name="no_service_info_1">Non è stato possibile connettersi al servizio AmazMod sull\'orologio. Se non hai ancora installato il servizio, segui le istruzioni riportate di seguito:</string>
+    <string name="no_service_info_1">Non è stato possibile connettersi al service di AmazMod sull\'orologio. Se non hai ancora installato il service, segui le istruzioni riportate di seguito:</string>
     <string name="no_service_info_2">1) Scarica l\'ultima release da uno dei seguenti link:</string>
-    <string name="no_service_info_3">2) Installa il file apk del servizio sull\'orologio</string>
+    <string name="no_service_info_3">2) Installa il service apk sull\'orologio</string>
     <string name="no_service_info_4">3) Infine riavvia sia l\'orologio che il telefono</string>
     <string name="enable_lpm_title">Attiva LPM</string>
     <string name="revoke_admin">Revoca admin</string>
@@ -245,7 +248,7 @@ Goditi l\'uso di AmazMod!\"</string>
     <string name="privacy_policy">Informativa sulla privacy</string>
     <string name="cant_check_service_updates">Impossibile controllare gli aggiornamenti del service.apk</string>
     <string name="new_update_available">Nuovo aggiornamento disponibile!</string>
-    <string name="new_service_update_available">Versione %s del servizio AmazMod disponibile</string>
+    <string name="new_service_update_available">Versione %s del service di AmazMod disponibile</string>
     <string name="update">Aggiorna</string>
     <string name="download_in_progress">Download in corso</string>
     <string name="download_failed">Download non riuscito</string>
@@ -359,9 +362,36 @@ Goditi l\'uso di AmazMod!\"</string>
     <string name="pref_battery_full_alert">Avviso batteria orologio completamente carica</string>
     <string name="pref_battery_full_alert_summary">Visualizza una notifica quando la batteria è completamente carica.</string>
     <string name="pref_heartrate_chart">Grafico battiti</string>
+    <string name="pref_heartrate_nodata">Dati del grafico non disponibili.</string>
     <string name="pref_heartrate_chart_summary">Mostra il grafico battiti nella schermata principale di AmazMod.</string>
     <string name="pref_log_lines_shown">Linee di log da mostrare</string>
     <string name="pref_log_lines_shown_summary">Numero di linee di testo mostrate nella vista Logs.</string>
     <string name="pref_enable_internet_companion">Abilita Amazfit Internet Companion</string>
     <string name="pref_enable_internet_companion_summary">Attiva il trasportatore AmazfitInternetCompanion (è utile solo se hai un\'app sull\'orologio che lo utilizza).</string>
+    <string name="ota_test_title">Test OTA</string>
+    <string name="type_service_number">Numero Service</string>
+    <string name="activity_batter_no_data">Nessun dato batteria</string>
+    <string name="export_battery">Esporta</string>
+    <string name="battery_export_success">Dati batteria esportati nella cartella AmazMod con nome %s</string>
+    <string name="battery_fragment_select_option">Seleziona un\'opzione</string>
+    <string name="battery_error_open_csv">Impossibile aprire file csv %s</string>
+    <string name="batter_error_export">Impossibile esportare i dati</string>
+    <string name="batter_data_request">Richiedi nuovi dati batteria</string>
+    <string name="batter_data_export">Esporta dati batteria</string>
+    <string name="app_options">Opzioni App</string>
+    <string name="notification_options">Opzioni di notifica</string>
+    <string name="notification_options_description">Non mostrare notifiche che contengono i seguenti testi (uno per riga):</string>
+    <string name="and">e</string>
+    <plurals name="day">
+        <item quantity="one">giorno</item>
+        <item quantity="other">giorni</item>
+    </plurals>
+    <plurals name="hour">
+        <item quantity="one">ora</item>
+        <item quantity="other">ore</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">minuto</item>
+        <item quantity="other">minuti</item>
+    </plurals>
 </resources>

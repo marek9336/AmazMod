@@ -14,9 +14,11 @@
     <string name="sync_settings">Synchronisation des paramètres&#8230;</string>
     <string name="brightness">Luminosité</string>
     <string name="tweaking">Peaufiner</string>
+    <string name="widgets">Widgets</string>
     <string name="watchface">WatchFace</string>
     <string name="stats">Statistiques</string>
     <string name="changelog">Changelog</string>
+    <string name="rate_app">Évaluer l\'application</string>
     <string name="enable">Activer</string>
     <string name="cancel">Annuler</string>
     <string name="select_unselect_all">Sélectionner tous/aucun</string>
@@ -38,6 +40,7 @@
     <string name="cant_uplaod_directory">Impossible d\'envoyer un dossier</string>
     <string name="sending">Envoi</string>
     <string name="wait">veuillez patienter</string>
+    <string name="file_choose_title">Choisissez un ou plusieurs fichiers</string>
     <string name="cant_upload_file">Impossible d\'envoyer le fichier</string>
     <string name="cant_download_file">Impossible de télécharger le fichier</string>
     <string name="file_upload_canceled">Transfert annulé</string>
@@ -357,9 +360,36 @@
     <string name="pref_battery_full_alert">Alerte de batterie pleine de la montre</string>
     <string name="pref_battery_full_alert_summary">Afficher une notification lorsque la batterie est complètement chargée.</string>
     <string name="pref_heartrate_chart">Tableau de fréquence cardiaque</string>
+    <string name="pref_heartrate_nodata">Aucun graphique de données disponible.</string>
     <string name="pref_heartrate_chart_summary">Afficher le graphique du rythme cardiaque dans l\'écran principal d\'AmazMod.</string>
     <string name="pref_log_lines_shown">Lignes de log affichées</string>
     <string name="pref_log_lines_shown_summary">Nombre de lignes de texte affichées dans la vue Logs.</string>
     <string name="pref_enable_internet_companion">Activer le Compagnon Internet Amazfit</string>
     <string name="pref_enable_internet_companion_summary">Active le transporteur AmazfitInternetCompanion (il n\'est utile que si vous avez une application sur la montre qui l\'utilise).</string>
+    <string name="ota_test_title">Testeur OTA</string>
+    <string name="type_service_number">N° de Service</string>
+    <string name="activity_batter_no_data">Aucune donnée batterie</string>
+    <string name="export_battery">Exporter</string>
+    <string name="battery_export_success">Données batterie exportées dans le dossier AmazMod avec le nom %s</string>
+    <string name="battery_fragment_select_option">Selectionnez une proposition</string>
+    <string name="battery_error_open_csv">Impossible d\'ouvrir le fichier csv :%s</string>
+    <string name="batter_error_export">Impossible d\'exporter les données</string>
+    <string name="batter_data_request">Demander de nouvelles données batterie</string>
+    <string name="batter_data_export">Exporter les données batterie</string>
+    <string name="app_options">Options de l\'App</string>
+    <string name="notification_options">Options des notifications</string>
+    <string name="notification_options_description">Ne pas afficher les notifications contenant les textes suivants (un par ligne) :</string>
+    <string name="and">et</string>
+    <plurals name="day">
+        <item quantity="one">jour</item>
+        <item quantity="other">jours</item>
+    </plurals>
+    <plurals name="hour">
+        <item quantity="one">heure</item>
+        <item quantity="other">heures</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">minute</item>
+        <item quantity="other"> minutes</item>
+    </plurals>
 </resources>

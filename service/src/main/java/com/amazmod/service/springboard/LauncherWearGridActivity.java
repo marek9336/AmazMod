@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import com.amazmod.service.AmazModAccessibilityService;
 import com.amazmod.service.R;
 import com.amazmod.service.adapters.GridViewPagerAdapter;
+import com.amazmod.service.events.HourlyChime;
 import com.amazmod.service.support.ActivityFinishRunnable;
 import com.amazmod.service.support.HorizontalGridViewPager;
 import com.amazmod.service.ui.fragments.WearAppsFragment;
@@ -84,6 +85,11 @@ public class LauncherWearGridActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (WearMenuFragment.chimeEnabled){
+            HourlyChime.setHourlyChime(this, true);
+            WearMenuFragment.chimeEnabled = true;
+        }
 
         mode = getIntent().getCharExtra(MODE, 'S');
 

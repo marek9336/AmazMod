@@ -76,7 +76,7 @@ public class AboutActivity extends BaseAppCompatActivity implements TransportSer
         version.setText(BuildConfig.VERSION_NAME);
         version.append(" (Build " + BuildConfig.VERSION_CODE + ")");
         if (Prefs.getBoolean(Constants.PREF_ENABLE_DEVELOPER_MODE, false)) {
-            version.append(" - dev");
+            version.append(" - " + BuildConfig.VERSION_CODE + ":dev");
         }
     }
 

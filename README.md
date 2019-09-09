@@ -28,8 +28,10 @@ AmazMod used to be a modified ("modded") Amazfit app, the companion app for Pace
 ### Installation
 
 ###### Download links:
-* Latest AmazMod (for phone) from PlayStore: https://play.google.com/apps/testing/com.edotassi.amazmod
+* Latest AmazMod (for phone) from PlayStore: https://play.google.com/store/apps/details?id=com.edotassi.amazmod
 * Latest service-release.apk (for watch), with optional installer for Windows: https://github.com/edotassi/AmazMod/releases/latest
+or
+https://github.com/edotassi/AmazMod/tree/master/service-releases
 
 ###### Installation steps to use all features
 1. Download and install latest AmazMod from [Play Store](https://play.google.com/store/apps/details?id=com.edotassi.amazmod) on phone;
@@ -38,8 +40,9 @@ AmazMod used to be a modified ("modded") Amazfit app, the companion app for Pace
 4. Disable "Push Notifications" in Amazfit Settings to prevent double notifications;
 5. Check if you see AmazMod widget on watch, if you don't then something went wrong, check Troubleshooting below;
 6. Open AmazMod app on phone and configure it to your needs.
-7. For better power managment, in the tweaking section on the phone client with the latest version - run:
-   `adb shell dpm set-active-admin com.amazmod.service/.receiver.AdminReceiver`
+7. For better power managment, enable Device Admin in the widget menu or in the tweaking section on the phone app, or still use adb and run:`adb shell dpm set-active-admin com.amazmod.service/.receiver.AdminReceiver`
+
+PS: On Verge, you must open AmazMod from the apps list the first time you install it to start the service, then go to the phone App to check connection (make sure you have set AmazMod as first widget in settings to make it permanent). You may need to restart launcher or watch to see the widget properly.
 
 ###### Installation steps for minimal set of features (notifications filter only)
 1. Download and install latest AmazMod from Play Store on phone;
@@ -64,7 +67,7 @@ You can use adb (all platforms), APKInstaller, Amazfit Tool or the provided inst
 
 * I do not get notifications  
 
-Make sure that AmazMod on phone has granted permissions to access notifications, restart both phone and watch and test notifications again (npotification tests from AmazMod app only works if you have service.apk installed on watch). Also keep in mind that you *must* keep stock Amazfit app installed and running on your phone for the current version of AmazMod to work!
+First, make sure you do not have Silet (Do not Disturb) mode enabled in both watch and phone. On watch it displays a "moon" icon when watch is unlocked but some custom watchfaces hide the status line so you must chech with the quick settings menu (swipe down form top), then tap the moon icon if it's blue to disable it. If it does not fix the problem, then make sure that AmazMod on phone has granted permissions to access notifications, restart both phone and watch and test notifications again ("standard" and "custom" notification tests from AmazMod app only works if you have service.apk installed on watch). Also keep in mind that you *must* keep stock Amazfit app installed and running on your phone for the current version of AmazMod to work!
 
 For more info, please check the [FAQ](https://github.com/edotassi/AmazMod/blob/master/FAQ.md).
 
@@ -100,6 +103,36 @@ For more info, please check the [FAQ](https://github.com/edotassi/AmazMod/blob/m
 		</td>
 	</tr>
 </table>
+
+## Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/AmazMod/AmazMod/graphs/contributors"><img src="https://opencollective.com/amazmod-33/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/amazmod-33#backer)]
+
+<a href="https://opencollective.com/amazmod-33#backers" target="_blank"><img src="https://opencollective.com/amazmod-33/backers.svg?width=890"></a>
+
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/amazmod-33#sponsor)]
+
+<a href="https://opencollective.com/amazmod-33/sponsor/0/website" target="_blank"><img src="https://opencollective.com/amazmod-33/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/amazmod-33/sponsor/1/website" target="_blank"><img src="https://opencollective.com/amazmod-33/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/amazmod-33/sponsor/2/website" target="_blank"><img src="https://opencollective.com/amazmod-33/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/amazmod-33/sponsor/3/website" target="_blank"><img src="https://opencollective.com/amazmod-33/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/amazmod-33/sponsor/4/website" target="_blank"><img src="https://opencollective.com/amazmod-33/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/amazmod-33/sponsor/5/website" target="_blank"><img src="https://opencollective.com/amazmod-33/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/amazmod-33/sponsor/6/website" target="_blank"><img src="https://opencollective.com/amazmod-33/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/amazmod-33/sponsor/7/website" target="_blank"><img src="https://opencollective.com/amazmod-33/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/amazmod-33/sponsor/8/website" target="_blank"><img src="https://opencollective.com/amazmod-33/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/amazmod-33/sponsor/9/website" target="_blank"><img src="https://opencollective.com/amazmod-33/sponsor/9/avatar.svg"></a>
+
+
 
 ### License
 

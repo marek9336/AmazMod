@@ -14,9 +14,11 @@
     <string name="sync_settings">Synchronizace nastavení &#8230;</string>
     <string name="brightness">Jas</string>
     <string name="tweaking">Vylepšení</string>
+    <string name="widgets">Widgety</string>
     <string name="watchface">Ciferník</string>
     <string name="stats">Statistika</string>
     <string name="changelog">Přehled změn</string>
+    <string name="rate_app">Ohodnotit aplikaci</string>
     <string name="enable">Povolit</string>
     <string name="cancel">Zrušit</string>
     <string name="select_unselect_all">Označit/Odznačit vše</string>
@@ -38,6 +40,7 @@
     <string name="cant_uplaod_directory">Nelze nahrát adresář</string>
     <string name="sending">Odesílání</string>
     <string name="wait">počkejte prosím</string>
+    <string name="file_choose_title">Vyberte jeden nebo více souborů</string>
     <string name="cant_upload_file">Nelze nahrát soubor</string>
     <string name="cant_download_file">Soubor nelze stáhnout</string>
     <string name="file_upload_canceled">Nahrávání souboru zrušeno</string>
@@ -359,9 +362,42 @@ Vychutnejte si používání AmazModu! ♡\"</string>
     <string name="pref_battery_full_alert">Upozornění na plně nabitou baterii v hodinkách</string>
     <string name="pref_battery_full_alert_summary">Dostat oznámení, když budou hodinky plně nabity.</string>
     <string name="pref_heartrate_chart">Graf tepové frekvence</string>
+    <string name="pref_heartrate_nodata">Pro tento graf nejsou dostupná žádná data.</string>
     <string name="pref_heartrate_chart_summary">Zobrazit graf tepové frekvence na hlavní obrazovce AmazModu.</string>
     <string name="pref_log_lines_shown">Zobrazené řádky protokolu</string>
     <string name="pref_log_lines_shown_summary">Počet řádků textu zobrazených v náhledu protokolu.</string>
     <string name="pref_enable_internet_companion">Povolit Amazfit Internet Companion</string>
     <string name="pref_enable_internet_companion_summary">Povolí transportér AmazfitInternetCompanion (je to užitečné jen tehdy, pokud máte aplikaci v hodinkách, která tuto funkci používá).</string>
+    <string name="ota_test_title">OTA Tester</string>
+    <string name="type_service_number">Servisní číslo</string>
+    <string name="activity_batter_no_data">Žádná data o baterii</string>
+    <string name="export_battery">Exportovat</string>
+    <string name="battery_export_success">Data o baterii byla exportována do AmazMod složky s názvem %s</string>
+    <string name="battery_fragment_select_option">Vyberte možnost</string>
+    <string name="battery_error_open_csv">Nebylo možné otevřít soubor csv %s</string>
+    <string name="batter_error_export">Data nelze exportovat</string>
+    <string name="batter_data_request">Vyžádat nové údaje o baterii</string>
+    <string name="batter_data_export">Exportovat údaje od baterii</string>
+    <string name="app_options">Možnosti aplikace</string>
+    <string name="notification_options">Nastavení oznámení</string>
+    <string name="notification_options_description">Nezobrazovat oznámení obsahující následující texty (jeden na řádek):</string>
+    <string name="and">a</string>
+    <plurals name="day">
+        <item quantity="one">den</item>
+        <item quantity="few">dny</item>
+        <item quantity="many">dny</item>
+        <item quantity="other">dny</item>
+    </plurals>
+    <plurals name="hour">
+        <item quantity="one">hodina</item>
+        <item quantity="few">hodin</item>
+        <item quantity="many">hodin</item>
+        <item quantity="other">hodin</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">minuta</item>
+        <item quantity="few">minut</item>
+        <item quantity="many">minut</item>
+        <item quantity="other">minut</item>
+    </plurals>
 </resources>

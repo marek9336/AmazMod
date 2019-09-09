@@ -4,7 +4,7 @@
     <string name="settings">Definições</string>
     <string name="notifications">Notificações enviadas</string>
     <string name="notifications_options">Opções de notificações</string>
-    <string name="charts">Charts</string>
+    <string name="charts">Gráficos</string>
     <string name="customui">Opções de Notificações de UI Personalizadas</string>
     <string name="others">Outros</string>
     <string name="other">Outro</string>
@@ -14,9 +14,11 @@
     <string name="sync_settings">A sincronizar configurações&#8230;</string>
     <string name="brightness">Brilho</string>
     <string name="tweaking">Ajustes</string>
+    <string name="widgets">Widgets</string>
     <string name="watchface">GreatFit / Calendário</string>
     <string name="stats">Estatísticas</string>
     <string name="changelog">Registo de alterações</string>
+    <string name="rate_app">Avalie a aplicação</string>
     <string name="enable">Ativar</string>
     <string name="cancel">Cancelar</string>
     <string name="select_unselect_all">Selecionar / Deselecionar Todos</string>
@@ -37,7 +39,8 @@
     <string name="file_not_exists">O ficheiro não existe</string>
     <string name="cant_uplaod_directory">Não possível fazer o envio do diretório</string>
     <string name="sending">A enviar</string>
-    <string name="wait">please wait</string>
+    <string name="wait">Por favor aguarde</string>
+    <string name="file_choose_title">Escolha um ou mais arquivos</string>
     <string name="cant_upload_file">Não é possível enviar o ficheiro</string>
     <string name="cant_download_file">Não é possível transferir o ficheiro</string>
     <string name="file_upload_canceled">Envio de ficheiro cancelado</string>
@@ -71,7 +74,7 @@
     <string name="telegram_channel">Canal do Telegram</string>
     <string name="support_email">Suporta email</string>
     <string name="project_github">Projeto no GitHub</string>
-    <string name="activity_about_project_maintainer">Project Maintainer</string>
+    <string name="activity_about_project_maintainer">Mantedor do projeto</string>
     <string name="activity_about_devs">Programador</string>
     <string name="activity_about_testers">Testers</string>
     <string name="translators">Tradutores</string>
@@ -88,10 +91,10 @@
     <string name="activity_stats_notifications_total">Total</string>
     <string name="activity_stats_notifications_in_the_last_hour">Na última hora</string>
     <string name="activity_stats_notifications_in_the_last_24_horus">Das últimas 24 horas</string>
-    <string name="pref_enable_notifications_summary">Let AmazMod handle all the notifications.</string>
+    <string name="pref_enable_notifications_summary">Permitir que AmazMod controle todas as notificações.</string>
     <string name="pref_enable_notifications">Notificações personalizadas</string>
     <string name="pref_filter_notifications_by_packages">Aplicações seleccionadas</string>
-    <string name="pref_filter_notifications_by_packages_summary">Only notifications from these apps will be sent to watch.</string>
+    <string name="pref_filter_notifications_by_packages_summary">Apenas estas notificações serão enviadas para o relógio.</string>
     <string name="pref_battery_background_sync_interval">Battery background sync interval</string>
     <string name="pref_battery_background_sync_interval_summary">Set background battery sync interval.</string>
     <string name="pref_battery_chart_time_interval">Battery chart time range</string>
@@ -357,9 +360,36 @@
     <string name="pref_battery_full_alert">Full watch battery alert</string>
     <string name="pref_battery_full_alert_summary">Get a notification when watch is fully charged.</string>
     <string name="pref_heartrate_chart">Heart rate chart</string>
+    <string name="pref_heartrate_nodata">No chart data available.</string>
     <string name="pref_heartrate_chart_summary">Show heart rate chart in AmazMod main screen.</string>
     <string name="pref_log_lines_shown">Log lines shown</string>
     <string name="pref_log_lines_shown_summary">Number of text lines shown in the Logs view.</string>
     <string name="pref_enable_internet_companion">Enable Amazfit Internet Companion</string>
     <string name="pref_enable_internet_companion_summary">Enables the AmazfitInternetCompanion transporter (it is only useful if you have an app on watch that uses this).</string>
+    <string name="ota_test_title">OTA Tester</string>
+    <string name="type_service_number">Service Number</string>
+    <string name="activity_batter_no_data">No battery data</string>
+    <string name="export_battery">Export</string>
+    <string name="battery_export_success">Battery data exported to AmazMod folder with name %s</string>
+    <string name="battery_fragment_select_option">Select an option</string>
+    <string name="battery_error_open_csv">Unable to open csv file %s</string>
+    <string name="batter_error_export">Unable to export data</string>
+    <string name="batter_data_request">Request new battery data</string>
+    <string name="batter_data_export">Export battery data</string>
+    <string name="app_options">App Options</string>
+    <string name="notification_options">Notification Options</string>
+    <string name="notification_options_description">Do not show notifications containing the following texts (one per line):</string>
+    <string name="and">and</string>
+    <plurals name="day">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
+    <plurals name="hour">
+        <item quantity="one">hour</item>
+        <item quantity="other">hours</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">minute</item>
+        <item quantity="other">minutes</item>
+    </plurals>
 </resources>

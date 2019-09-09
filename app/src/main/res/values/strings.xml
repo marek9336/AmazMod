@@ -12,9 +12,11 @@
     <string name="sync_settings">Syncing settings&#8230;</string>
     <string name="brightness">Brightness</string>
     <string name="tweaking">Tweaking</string>
+    <string name="widgets">Widgets</string>
     <string name="watchface">GreatFit / Calendar</string>
     <string name="stats">Stats</string>
     <string name="changelog">Changelog</string>
+    <string name="rate_app">Rate App</string>
     <string name="enable">Enable</string>
     <string name="cancel">Cancel</string>
     <string name="select_unselect_all">Select/Unselect all</string>
@@ -36,6 +38,7 @@
     <string name="cant_uplaod_directory">Can\'t upload directory</string>
     <string name="sending">Sending</string>
     <string name="wait">please wait</string>
+    <string name="file_choose_title">Choose one or more file</string>
     <string name="cant_upload_file">Can\'t upload file</string>
     <string name="cant_download_file">Can\'t download file</string>
     <string name="file_upload_canceled">File upload canceled</string>
@@ -355,9 +358,36 @@
     <string name="pref_battery_full_alert">Full watch battery alert</string>
     <string name="pref_battery_full_alert_summary">Get a notification when watch is fully charged.</string>
     <string name="pref_heartrate_chart">Heart rate chart</string>
+    <string name="pref_heartrate_nodata">No chart data available.</string>
     <string name="pref_heartrate_chart_summary">Show heart rate chart in AmazMod main screen.</string>
     <string name="pref_log_lines_shown">Log lines shown</string>
     <string name="pref_log_lines_shown_summary">Number of text lines shown in the Logs view.</string>
     <string name="pref_enable_internet_companion">Enable Amazfit Internet Companion</string>
     <string name="pref_enable_internet_companion_summary">Enables the AmazfitInternetCompanion transporter (it is only useful if you have an app on watch that uses this).</string>
+    <string name="ota_test_title">OTA Tester</string>
+    <string name="type_service_number">Service Number</string>
+    <string name="activity_batter_no_data">No battery data</string>
+    <string name="export_battery">Export</string>
+    <string name="battery_export_success">Battery data exported to AmazMod folder with name %s</string>
+    <string name="battery_fragment_select_option">Select an option</string>
+    <string name="battery_error_open_csv">Unable to open csv file %s</string>
+    <string name="batter_error_export">Unable to export data</string>
+    <string name="batter_data_request">Request new battery data</string>
+    <string name="batter_data_export">Export battery data</string>
+    <string name="app_options">App Options</string>
+    <string name="notification_options">Notification Options</string>
+    <string name="notification_options_description">Do not show notifications containing the following texts (one per line):</string>
+    <string name="and">and</string>
+    <plurals name="day">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
+    <plurals name="hour">
+        <item quantity="one">hour</item>
+        <item quantity="other">hours</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">minute</item>
+        <item quantity="other">minutes</item>
+    </plurals>
 </resources>
