@@ -193,7 +193,7 @@ public class SystemProperties {
         try {
             closeable.close();
         } catch (IOException e) {
-            Logger.error("SystemProperties closeQuietly exception: " + e.toString());
+            Logger.error("SystemProperties closeQuietly exception: " + e.getMessage());
         }
     }
 
@@ -214,7 +214,7 @@ public class SystemProperties {
             e.getCause().printStackTrace();
         } catch (Exception e){
             e.printStackTrace();
-            Logger.error("SystemProperties goToSleep exception: " + e.toString());
+            Logger.error("SystemProperties goToSleep exception: " + e.getMessage());
         }
     }
 
@@ -230,7 +230,7 @@ public class SystemProperties {
                 }
             }
         } catch (Exception e){
-            Logger.error("SystemProperties switchPowerMode exception: " + e.toString());
+            Logger.error("SystemProperties switchPowerMode exception: " + e.getMessage());
         }
     }
 

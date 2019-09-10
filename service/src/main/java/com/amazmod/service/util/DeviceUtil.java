@@ -475,31 +475,34 @@ public class DeviceUtil {
     }
 
     public static void systemPutString(Context context, String name, String value) {
-        Logger.trace("systemPutString");
-        if (Constants.CUSTOM_WATCHFACE_DATA.equals(name)) {
-            Logger.trace("systemPutString widgetSettings");
-            WidgetSettings widgetSettings = new WidgetSettings(Constants.TAG, context);
-            widgetSettings.set(name, value);
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.System.canWrite(context)) {
-                    showToast(context, "Write Settings Permission Required!");
-                    Logger.warn("no write settings permission!");
-                    return;
+        //Logger.trace("systemPutString");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.System.canWrite(context)) {
+                showToast(context, "Write Settings Permission Required!");
+                Logger.warn("no write settings permission!");
+                if (Constants.CUSTOM_WATCHFACE_DATA.equals(name)) {
+                    Logger.trace("systemPutString widgetSettings " + Constants.CUSTOM_WATCHFACE_DATA);
+                    WidgetSettings widgetSettings = new WidgetSettings(Constants.TAG, context);
+                    widgetSettings.set(name, value);
                 }
+                return;
             }
-            Logger.trace("systemPutString SystemSettings");
-            Settings.System.putString(context.getContentResolver(), name, value);
         }
+        Settings.System.putString(context.getContentResolver(), name, value);
+        Logger.trace("systemPutString SystemSettings " + name);
     }
 
     public static String systemGetString(Context context, String name) {
-        if (Constants.CUSTOM_WATCHFACE_DATA.equals(name)) {
-            Logger.trace("systemGetString widgetSettings");
-            WidgetSettings widgetSettings = new WidgetSettings(Constants.TAG, context);
-            return widgetSettings.get(name);
-        } else
-            return Settings.System.getString(context.getContentResolver(), name);
+        String result = Settings.System.getString(context.getContentResolver(), name);
+        Logger.trace("systemGetString SystemSettings " + name);
+        if (result == null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Constants.CUSTOM_WATCHFACE_DATA.equals(name)) {
+                Logger.trace("systemGetString widgetSettings " + Constants.CUSTOM_WATCHFACE_DATA);
+                WidgetSettings widgetSettings = new WidgetSettings(Constants.TAG, context);
+                result = widgetSettings.get(name);
+            }
+        }
+        return result;
     }
 
     public static void systemPutInt(Context context, String name, int value) {
