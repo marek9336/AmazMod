@@ -12,7 +12,7 @@ pipeline {
 
     stage('build a job') {
       steps {
-        build 'app'
+        build 'libs'
       }
     }
 
