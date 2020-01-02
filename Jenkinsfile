@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('build a job') {
       steps {
-        build 'gradlew'
+        build 'README.md'
       }
     }
 
