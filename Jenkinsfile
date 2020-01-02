@@ -1,18 +1,9 @@
 pipeline {
   agent any
   stages {
-    stage('test1') {
-      steps {
-        sleep 2
-        echo 'Hello World'
-        echo 'Amazfit build'
-        echo 'Test'
-      }
-    }
-
     stage('build a job') {
       steps {
-        build 'libs'
+        build 'gradlew'
       }
     }
 
