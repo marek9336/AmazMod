@@ -1,7 +1,7 @@
 pipeline {
   agent any
   stages {
-    stage('') {
+    stage('test1') {
       steps {
         sleep 2
         echo 'Hello World'
