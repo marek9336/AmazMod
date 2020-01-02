@@ -10,9 +10,9 @@ pipeline {
       }
     }
 
-    stage('') {
+    stage('build a job') {
       steps {
-        build 'Test'
+        build 'app'
       }
     }
 
