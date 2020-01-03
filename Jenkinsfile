@@ -3,7 +3,8 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh '''stage(\'npm-build\') {
+        sh '''stage(\'npm-build\')
+{
     agent {
         docker {
             image \'node:7.4\'
@@ -19,8 +20,8 @@ pipeline {
         }
     }
 }'''
-        }
       }
-
     }
+
   }
+}
